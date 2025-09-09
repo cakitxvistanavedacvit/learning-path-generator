@@ -110,15 +110,83 @@
                 'Mobile App Development', 'Cloud Computing', 'Artificial Intelligence', 'Blockchain'
             ];
 
+            // Mock course data generator
+            const generateMockCourses = (topic) => {
+                const courseTemplates = [
+                    {
+                        titleTemplate: `Complete {topic} Course - Beginner to Advanced 2024`,
+                        channel: 'TechWorld with Nana',
+                        duration: '8h 45m',
+                        views: '2.4M views',
+                        rating: 4.8,
+                        description: `Master {topic} from scratch with this comprehensive course. Perfect for beginners with no prior experience.`
+                    },
+                    {
+                        titleTemplate: `{topic} Full Tutorial - Learn in 6 Hours`,
+                        channel: 'freeCodeCamp.org',
+                        duration: '6h 12m',
+                        views: '1.8M views',
+                        rating: 4.9,
+                        description: `Complete {topic} tutorial covering all essential concepts and practical applications.`
+                    },
+                    {
+                        titleTemplate: `{topic} Crash Course for Beginners`,
+                        channel: 'Traversy Media',
+                        duration: '4h 30m',
+                        views: '892K views',
+                        rating: 4.7,
+                        description: `Quick but comprehensive introduction to {topic} with hands-on projects.`
+                    },
+                    {
+                        titleTemplate: `Master {topic} - Professional Bootcamp`,
+                        channel: 'Academind',
+                        duration: '12h 15m',
+                        views: '567K views',
+                        rating: 4.6,
+                        description: `Professional-level {topic} course with real-world projects and industry best practices.`
+                    },
+                    {
+                        titleTemplate: `{topic} for Beginners - Step by Step Guide`,
+                        channel: 'Programming with Mosh',
+                        duration: '5h 20m',
+                        views: '1.2M views',
+                        rating: 4.8,
+                        description: `Easy-to-follow {topic} tutorial designed specifically for absolute beginners.`
+                    },
+                    {
+                        titleTemplate: `Advanced {topic} Techniques and Best Practices`,
+                        channel: 'The Net Ninja',
+                        duration: '7h 45m',
+                        views: '445K views',
+                        rating: 4.5,
+                        description: `Take your {topic} skills to the next level with advanced techniques and professional workflows.`
+                    }
+                ];
+
+                return courseTemplates.map((template, index) => ({
+                    id: index,
+                    title: template.titleTemplate.replace(/{topic}/g, topic),
+                    channel: template.channel,
+                    duration: template.duration,
+                    views: template.views,
+                    rating: template.rating,
+                    cost: 'Free',
+                    provider: 'YouTube',
+                    thumbnail: `https://via.placeholder.com/320x180/4F46E5/FFFFFF?text=${encodeURIComponent(topic + ' Course')}`,
+                    description: template.description.replace(/{topic}/g, topic),
+                    url: `https://www.youtube.com/watch?v=demo_${topic.replace(/\s+/g, '_')}_${index}`,
+                    publishedAt: `${Math.floor(Math.random() * 12) + 1} months ago`
+                }));
+            };
+
             const generateLearningPath = () => {
                 setIsGenerating(true);
                 setGeneratingStep(0);
                 
-                // Simulate realistic AI generation with steps
                 const steps = [
                     "Analyzing your preferences...",
-                    "Searching course databases...", 
-                    "Filtering by your criteria...",
+                    "Searching course databases...",
+                    "Filtering by quality and relevance...",
                     "Creating personalized roadmap...",
                     "Optimizing learning sequence..."
                 ];
@@ -130,14 +198,16 @@
                     
                     if (currentStepIndex >= steps.length) {
                         clearInterval(stepInterval);
-                        setTimeout(() => {
-                            const path = createLearningPath(learningTopic, preferences);
-                            setGeneratedPath(path);
-                            setIsGenerating(false);
-                            setCurrentStep('results');
-                        }, 1000);
                     }
                 }, 800);
+
+                // Simulate generation time
+                setTimeout(() => {
+                    const path = createLearningPath(learningTopic, preferences);
+                    setGeneratedPath(path);
+                    setIsGenerating(false);
+                    setCurrentStep('results');
+                }, 4000);
             };
 
             const createLearningPath = (topic, prefs) => {
@@ -148,9 +218,9 @@
                 };
 
                 const costMap = {
-                    'free': 'Free',
-                    'mixed': '$50-200',
-                    'premium': '$200-500'
+                    'free': 'Free (Online courses)',
+                    'mixed': 'Free - $200 (Mixed resources)',
+                    'premium': '$200-500 (Premium courses)'
                 };
 
                 const basePath = {
@@ -159,7 +229,7 @@
                     totalHours: durationMap[prefs.duration].hours,
                     estimatedCost: costMap[prefs.cost],
                     phases: generatePhases(topic, prefs),
-                    resources: generateResources(topic, prefs),
+                    resources: generateMockCourses(topic),
                     projects: generateProjects(topic, prefs)
                 };
                 return basePath;
@@ -211,46 +281,6 @@
                 return phases;
             };
 
-            const generateResources = (topic, prefs) => {
-                const platformOptions = {
-                    free: [
-                        { provider: "YouTube", icon: "🎥", description: "Free comprehensive tutorials" },
-                        { provider: "freeCodeCamp", icon: "💻", description: "Interactive free courses" },
-                        { provider: "Khan Academy", icon: "🎓", description: "Structured learning paths" },
-                        { provider: "MIT OpenCourseWare", icon: "🏛️", description: "University-level content" }
-                    ],
-                    mixed: [
-                        { provider: "YouTube", icon: "🎥", description: "Free comprehensive tutorials" },
-                        { provider: "Udemy", icon: "💼", description: "Affordable comprehensive courses" },
-                        { provider: "Coursera", icon: "🎓", description: "University partnerships" },
-                        { provider: "LinkedIn Learning", icon: "💼", description: "Professional development" }
-                    ],
-                    premium: [
-                        { provider: "MasterClass", icon: "⭐", description: "Expert-taught premium courses" },
-                        { provider: "Pluralsight", icon: "💎", description: "Technology-focused learning" },
-                        { provider: "LinkedIn Learning", icon: "💼", description: "Professional development" },
-                        { provider: "Coursera Plus", icon: "🎓", description: "Unlimited access to courses" }
-                    ]
-                };
-
-                const selectedPlatforms = platformOptions[prefs.cost];
-                
-                return selectedPlatforms.map((platform, index) => ({
-                    title: `${topic} ${index === 0 ? 'Complete Guide' : index === 1 ? 'Masterclass' : index === 2 ? 'Professional Certificate' : 'Specialization'}`,
-                    provider: platform.provider,
-                    icon: platform.icon,
-                    type: index < 2 ? "Video Course" : "Certificate Program",
-                    cost: prefs.cost === 'free' ? 'Free' : index === 0 ? '$19.99' : index === 1 ? '$49.99' : '$79.99',
-                    duration: `${8 + index * 4} hours`,
-                    rating: (4.3 + index * 0.1 + Math.random() * 0.3).toFixed(1),
-                    certificate: prefs.certification !== 'none' && index > 0,
-                    url: "#",
-                    description: `${platform.description} covering ${topic} from ${index === 0 ? 'basics to intermediate' : index === 1 ? 'intermediate to advanced' : 'comprehensive professional level'}.`,
-                    students: `${Math.floor(Math.random() * 50 + 10)}k+ students`,
-                    lastUpdated: "Recently updated"
-                }));
-            };
-
             const generateProjects = (topic, prefs) => {
                 const projectComplexity = {
                     quick: [
@@ -283,6 +313,18 @@
                 }));
             };
 
+            const togglePhaseCompletion = (index) => {
+                const updatedPath = { ...generatedPath };
+                updatedPath.phases[index].completed = !updatedPath.phases[index].completed;
+                setGeneratedPath(updatedPath);
+            };
+
+            const toggleProjectCompletion = (index) => {
+                const updatedPath = { ...generatedPath };
+                updatedPath.projects[index].completed = !updatedPath.projects[index].completed;
+                setGeneratedPath(updatedPath);
+            };
+
             const renderInputStep = () => (
                 <div className="min-h-screen gradient-bg flex items-center justify-center p-6">
                     <div className="max-w-5xl w-full">
@@ -299,8 +341,8 @@
                             </p>
                             <div className="flex flex-wrap justify-center gap-6 text-blue-100">
                                 <div className="flex items-center gap-2 bg-white bg-opacity-20 px-4 py-2 rounded-full">
-                                    <span className="text-2xl">⭐</span>
-                                    <span className="font-semibold">500k+ paths generated</span>
+                                    <span className="text-2xl">🎥</span>
+                                    <span className="font-semibold">Curated courses</span>
                                 </div>
                                 <div className="flex items-center gap-2 bg-white bg-opacity-20 px-4 py-2 rounded-full">
                                     <span className="text-2xl">🚀</span>
@@ -465,9 +507,9 @@
 
                             {/* Trust Indicators */}
                             <div className="mt-8 text-center text-gray-600">
-                                <p className="text-sm mb-2">Trusted by learners worldwide</p>
+                                <p className="text-sm mb-2">Powered by curated educational content</p>
                                 <div className="flex justify-center items-center gap-4 text-xs">
-                                    <span>⭐ 4.9/5 rating</span>
+                                    <span>🎥 Quality courses</span>
                                     <span>•</span>
                                     <span>🔒 Privacy protected</span>
                                     <span>•</span>
@@ -483,7 +525,7 @@
                 const steps = [
                     "Analyzing your preferences...",
                     "Searching course databases...",
-                    "Filtering by your criteria...",
+                    "Filtering by quality and relevance...",
                     "Creating personalized roadmap...",
                     "Optimizing learning sequence..."
                 ];
@@ -547,18 +589,6 @@
                         </div>
                     </div>
                 );
-            };
-
-            const toggleProjectCompletion = (projectIndex) => {
-                const updatedPath = { ...generatedPath };
-                updatedPath.projects[projectIndex].completed = !updatedPath.projects[projectIndex].completed;
-                setGeneratedPath(updatedPath);
-            };
-
-            const togglePhaseCompletion = (phaseIndex) => {
-                const updatedPath = { ...generatedPath };
-                updatedPath.phases[phaseIndex].completed = !updatedPath.phases[phaseIndex].completed;
-                setGeneratedPath(updatedPath);
             };
 
             const renderResultsStep = () => (
@@ -666,51 +696,58 @@
                             </div>
                         </div>
 
-                        {/* Recommended Resources */}
+                        {/* Recommended Courses */}
                         <div className="mb-16">
-                            <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">📚 Curated Learning Resources</h2>
+                            <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">🎥 Recommended Courses</h2>
                             <div className="grid lg:grid-cols-2 gap-8">
                                 {generatedPath?.resources.map((resource, index) => (
                                     <div key={index} className="resource-card rounded-2xl p-8 card-hover">
-                                        <div className="flex items-start justify-between mb-6">
-                                            <div className="flex items-start gap-4">
-                                                <div className="text-4xl">{resource.icon}</div>
-                                                <div className="flex-1">
-                                                    <h3 className="font-bold text-xl text-gray-800 mb-2">{resource.title}</h3>
-                                                    <p className="text-blue-600 font-semibold text-lg mb-2">{resource.provider}</p>
-                                                    <p className="text-gray-600 mb-3">{resource.description}</p>
-                                                </div>
+                                        <div className="flex items-start gap-4 mb-6">
+                                            <div className="w-32 h-18 flex-shrink-0 rounded-lg overflow-hidden">
+                                                <img 
+                                                    src={resource.thumbnail} 
+                                                    alt={resource.title}
+                                                    className="w-full h-full object-cover"
+                                                />
                                             </div>
-                                            <div className="text-right ml-4">
-                                                <div className="text-2xl font-bold text-green-600 mb-1">{resource.cost}</div>
-                                                <div className="flex items-center gap-1 text-lg text-yellow-500">
-                                                    ⭐ {resource.rating}
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="font-bold text-xl text-gray-800 mb-2 line-clamp-2">
+                                                    {resource.title}
+                                                </h3>
+                                                <p className="text-blue-600 font-semibold text-lg mb-2">
+                                                    📺 {resource.channel}
+                                                </p>
+                                                <p className="text-gray-600 mb-3 line-clamp-2">
+                                                    {resource.description}
+                                                </p>
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <div className="flex items-center gap-1">
+                                                        {[...Array(5)].map((_, i) => (
+                                                            <span key={i} className={`text-sm ${i < Math.floor(resource.rating) ? 'text-yellow-400' : 'text-gray-300'}`}>★</span>
+                                                        ))}
+                                                        <span className="text-sm text-gray-600 ml-1">{resource.rating}</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="flex items-center justify-between border-t pt-6">
-                                            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                                                <span className="flex items-center gap-1">
-                                                    <span className="text-base">🎥</span>
-                                                    {resource.duration}
+                                            <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500">
+                                                <span className="flex items-center gap-1 bg-green-50 text-green-700 px-3 py-1 rounded-full font-medium">
+                                                    💰 {resource.cost}
                                                 </span>
                                                 <span className="flex items-center gap-1">
-                                                    <span className="text-base">📝</span>
-                                                    {resource.type}
+                                                    ⏱️ {resource.duration}
                                                 </span>
-                                                {resource.certificate && (
-                                                    <span className="flex items-center gap-1">
-                                                        <span className="text-base">🎓</span>
-                                                        Certificate
-                                                    </span>
-                                                )}
                                                 <span className="flex items-center gap-1">
-                                                    <span className="text-base">👥</span>
-                                                    {resource.students}
+                                                    👁️ {resource.views}
+                                                </span>
+                                                <span className="flex items-center gap-1">
+                                                    📅 {resource.publishedAt}
                                                 </span>
                                             </div>
-                                            <button className="bg-blue-600 text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
-                                                View Course →
+                                            <button className="bg-red-600 text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-red-700 transition-colors flex items-center gap-2">
+                                                <span className="text-base">▶️</span>
+                                                Watch Course
                                             </button>
                                         </div>
                                     </div>
@@ -756,8 +793,7 @@
 
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm text-gray-500 flex items-center gap-1">
-                                                <span className="text-base">⏱️</span>
-                                                {project.duration}
+                                                ⏱️ {project.duration}
                                             </span>
                                             <button
                                                 onClick={() => toggleProjectCompletion(index)}
